@@ -89,13 +89,7 @@ class DocxExporter:
         # Add images before text if configured
         if self.image_position == "before":
             for image_path in images:
-                if Path(image_path).exists():
-                    try:
-                        self._add_image(image_path)
-                        # Add spacing after image
-                        self.doc.add_paragraph()
-                    except Exception as e:
-                        print(f"Error inserting image {image_path}: {e}")
+                self._process_media_file(image_path)
         
         # Add text with formatting
         if text:
@@ -106,13 +100,7 @@ class DocxExporter:
         # Add images after text if configured (default)
         if self.image_position == "after":
             for image_path in images:
-                if Path(image_path).exists():
-                    try:
-                        self._add_image(image_path)
-                        # Add spacing after image
-                        self.doc.add_paragraph()
-                    except Exception as e:
-                        print(f"Error inserting image {image_path}: {e}")
+                self._process_media_file(image_path)
         
         # Add spacing between posts
         self.doc.add_paragraph()
@@ -185,6 +173,31 @@ class DocxExporter:
         # Add remaining text after last entity
         if current_pos < len(text):
             paragraph.add_run(text[current_pos:])
+
+    def _process_media_file(self, file_path: str) -> None:
+        """Process a media file, embedding it if it's a supported image, or adding a placeholder otherwise."""
+        SUPPORTED_IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']
+        path = Path(file_path)
+
+        if not path.exists():
+            return
+
+        if path.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS:
+            try:
+                self._add_image(file_path)
+                self.doc.add_paragraph()  # Add spacing after image
+            except Exception as e:
+                print(f"Error inserting image {file_path}: {e}")
+        else:
+            # Add a placeholder for unsupported files
+            try:
+                p = self.doc.add_paragraph()
+                run = p.add_run(f"[Unsupported file downloaded: {path.name}]")
+                run.italic = True
+                run.font.color.rgb = RGBColor(128, 128, 128)  # Gray color
+                self.doc.add_paragraph()  # Add spacing after placeholder
+            except Exception as e:
+                print(f"Error adding placeholder for {file_path}: {e}")
     
     def _add_image(self, image_path: str) -> None:
         """
