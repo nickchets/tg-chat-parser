@@ -39,6 +39,12 @@ It's best practice to use a Python virtual environment to manage dependencies.
     pip install -r requirements.txt
     ```
 
+3.  **Verify the installation** (optional but recommended):
+    ```bash
+    pytest
+    ruff check src/ tests/
+    ```
+
 ## Step 4: Configure Your API Credentials
 
 1.  **Create a `.env` file** in the root of the project directory.
@@ -72,8 +78,38 @@ After a successful login, a `session.session` file will be created. This file ke
 After authentication, the script will guide you through the export options:
 -   Channel URL
 -   Start date
--   Image positioning
--   Hyperlink handling
--   And more...
+-   Image positioning (before/after text)
+-   Hyperlink handling (clickable/plain text)
+-   Date headings (enabled/disabled)
+-   Output file name (auto-generated)
 
 Your exported `.docx` files will be saved in the `results/` directory.
+
+## Troubleshooting
+
+### Common Issues
+
+1.  **Authentication fails**:
+    -   Ensure your API credentials in `.env` are correct
+    -   Check that your phone number includes the country code (e.g., `+1...`)
+    -   Wait for the Telegram code before entering it
+
+2.  **Module not found errors**:
+    -   Make sure your virtual environment is active
+    -   Re-run `pip install -r requirements.txt`
+
+3.  **Permission errors**:
+    -   Ensure the script has write permissions for `results/` and `temp_media/` directories
+    -   On Linux/macOS, you might need to run with appropriate user permissions
+
+4.  **Empty or incomplete exports**:
+    -   Check that the channel URL is correct and public
+    -   Verify the date range includes messages from that period
+    -   Some private channels require you to be a member
+
+### Getting Help
+
+If you encounter issues not covered here:
+1.  Check the [GitHub Issues](https://github.com/nickchets/tg-chat-parser/issues)
+2.  Create a new issue with details about your error
+3.  Include your OS, Python version, and any error messages
